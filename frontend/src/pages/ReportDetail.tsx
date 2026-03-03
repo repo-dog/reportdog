@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatDate } from '../utils/formatDate';
 import {
   Box,
   Card,
@@ -87,7 +88,7 @@ const ReportDetail: React.FC = () => {
     <Box>
       <Button
         startIcon={<ArrowBack />}
-        onClick={() => navigate('/reports')}
+        onClick={() => navigate(-1)}
         sx={{ mb: 1 }}
         size="small"
       >
@@ -108,7 +109,7 @@ const ReportDetail: React.FC = () => {
                 </Typography>
               )}
               <Typography variant="caption" color="text.secondary">
-                {new Date(report.uploaded_at).toLocaleString()} · {report.source}
+                {formatDate(report.timestamp || report.uploaded_at)} · {report.source}
               </Typography>
             </Box>
             <Stack direction="row" spacing={1} alignItems="center">

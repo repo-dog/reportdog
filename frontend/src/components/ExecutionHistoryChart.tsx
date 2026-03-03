@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatDateShort } from '../utils/formatDate';
 import {
   Card,
   Typography,
@@ -38,7 +39,7 @@ const ExecutionHistoryChart: React.FC<Props> = ({ executionName }) => {
   if (!data || data.length <= 1) return null;
 
   const chartData = [...data].reverse().map((d) => ({
-    date: new Date(d.uploaded_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+    date: formatDateShort(d.uploaded_at),
     passed: d.passed,
     failed: d.failed,
     skipped: d.skipped,

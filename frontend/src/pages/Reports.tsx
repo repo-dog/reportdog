@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { formatDate } from '../utils/formatDate';
 import {
   Box,
   Card,
@@ -13,7 +14,6 @@ import {
   Chip,
   TablePagination,
   Skeleton,
-  IconButton,
   Stack,
   InputAdornment,
   Autocomplete,
@@ -21,9 +21,11 @@ import {
   CircularProgress,
   Fade,
 } from '@mui/material';
-import { Visibility, Search as SearchIcon, CheckCircleOutline, ErrorOutline, ListAlt, AddCircleOutline } from '@mui/icons-material';
+import { Search as SearchIcon, CheckCircleOutline, ErrorOutline, ListAlt, AddCircleOutline } from '@mui/icons-material';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs, { type Dayjs } from 'dayjs';
 import { listReports, listTags } from '../api/client';
 import type { TagInfo } from '../api/client';
 import TestResultBar from '../components/TestResultBar';
@@ -55,6 +57,8 @@ const Reports: React.FC = () => {
   const pageSize = parseInt(searchParams.get('page_size') || '20');
   const executionName = searchParams.get('execution_name') || '';
   const status = searchParams.get('status') || 'all';
+  const fromDate = searchParams.get('from') || '';
+  const toDate = searchParams.get('to') || '';
 
   // Parse tags from URL: format is "key1:value1,key2:value2"
   const tagsParam = searchParams.get('tags') || '';
@@ -127,6 +131,13 @@ const Reports: React.FC = () => {
     params.tag_value = selectedTags[0].value;
   }
   if (debouncedSearch.trim()) params.q = debouncedSearch.trim();
+  if (fromDate) params.from = new Date(fromDate).toISOString();
+  if (toDate) {
+    // Set to end of day
+    const end = new Date(toDate);
+    end.setHours(23, 59, 59, 999);
+    params.to = end.toISOString();
+  }
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['reports', params],
@@ -226,7 +237,8 @@ const Reports: React.FC = () => {
               })}
             </Stack>
           </Stack>
-          <Autocomplete
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Autocomplete
             multiple
             size="small"
             options={(allTags ?? []).filter(
@@ -263,7 +275,30 @@ const Reports: React.FC = () => {
               <TextField {...params} placeholder="Filter by tags…" />
             )}
             noOptionsText="No tags found"
+            sx={{ flex: 1 }}
           />
+            <DatePicker
+              format="DD/MM/YY"
+              value={fromDate ? dayjs(fromDate) : null}
+              onChange={(val: Dayjs | null) => updateParam('from', val ? val.format('YYYY-MM-DD') : '')}
+              maxDate={toDate ? dayjs(toDate) : undefined}
+              slotProps={{
+                textField: { size: 'small', placeholder: 'From', sx: { minWidth: 130 } },
+                field: { clearable: true, onClear: () => updateParam('from', '') },
+              }}
+            />
+            <Typography variant="caption" color="text.secondary">–</Typography>
+            <DatePicker
+              format="DD/MM/YY"
+              value={toDate ? dayjs(toDate) : null}
+              onChange={(val: Dayjs | null) => updateParam('to', val ? val.format('YYYY-MM-DD') : '')}
+              minDate={fromDate ? dayjs(fromDate) : undefined}
+              slotProps={{
+                textField: { size: 'small', placeholder: 'To', sx: { minWidth: 130 } },
+                field: { clearable: true, onClear: () => updateParam('to', '') },
+              }}
+            />
+          </Stack>
         </Stack>
       </Card>
 
@@ -285,11 +320,10 @@ const Reports: React.FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Execution</TableCell>
-                <TableCell>Uploaded</TableCell>
+                <TableCell>Timestamp</TableCell>
                 <TableCell sx={{ minWidth: 180 }}>Results</TableCell>
                 <TableCell align="center">Duration</TableCell>
                 <TableCell>Tags</TableCell>
-                <TableCell align="center" width={48}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody
@@ -306,7 +340,6 @@ const Reports: React.FC = () => {
                       <TableCell><Skeleton variant="rounded" height={18} /></TableCell>
                       <TableCell align="center"><Skeleton variant="text" width={40} sx={{ mx: 'auto' }} /></TableCell>
                       <TableCell><Skeleton variant="rounded" width={80} height={22} /></TableCell>
-                      <TableCell align="center"><Skeleton variant="circular" width={24} height={24} sx={{ mx: 'auto' }} /></TableCell>
                     </TableRow>
                   ))
                 : filteredReports.map((r) => {
@@ -342,7 +375,7 @@ const Reports: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <Typography variant="caption">
-                          {new Date(r.uploaded_at).toLocaleString()}
+                          {formatDate(r.timestamp || r.uploaded_at)}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -402,17 +435,12 @@ const Reports: React.FC = () => {
                           )}
                         </Stack>
                       </TableCell>
-                      <TableCell align="center">
-                        <IconButton size="small">
-                          <Visibility fontSize="small" />
-                        </IconButton>
-                      </TableCell>
                     </TableRow>
                     );
                   })}
               {!isLoading && filteredReports.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                     <Typography color="text.secondary">No reports found</Typography>
                   </TableCell>
                 </TableRow>

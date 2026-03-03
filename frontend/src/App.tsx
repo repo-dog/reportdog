@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { ThemeProvider } from './theme/ThemeContext';
 import { AppConfigProvider } from './context/AppConfigContext';
 import Layout from './components/Layout';
@@ -21,8 +23,9 @@ const queryClient = new QueryClient({
 
 const App: React.FC = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <AppConfigProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <ThemeProvider>
+        <AppConfigProvider>
         <BrowserRouter>
           <Routes>
             <Route element={<Layout />}>
@@ -34,7 +37,8 @@ const App: React.FC = () => (
           </Routes>
         </BrowserRouter>
       </AppConfigProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </LocalizationProvider>
   </QueryClientProvider>
 );
 

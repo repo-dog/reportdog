@@ -66,6 +66,15 @@ func (s *ReportService) IngestReport(req IngestRequest) (*models.TestReport, err
 		Tags:          models.TagList(tags),
 	}
 
+	// Derive report-level timestamp from the earliest suite timestamp.
+	for _, suite := range parsed.Suites {
+		if suite.Timestamp != nil {
+			if report.Timestamp == nil || suite.Timestamp.Before(*report.Timestamp) {
+				report.Timestamp = suite.Timestamp
+			}
+		}
+	}
+
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(&report).Error; err != nil {
 			return fmt.Errorf("failed to create report: %w", err)

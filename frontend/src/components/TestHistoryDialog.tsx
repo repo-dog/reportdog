@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDate } from '../utils/formatDate';
 import {
   Dialog,
   DialogTitle,
@@ -72,7 +73,7 @@ const TestHistoryDialog: React.FC<Props> = ({ open, onClose, executionName, test
                     <TableRow key={i}>
                       <TableCell>
                         <Typography variant="caption">
-                          {new Date(item.uploaded_at).toLocaleString()}
+                          {formatDate(item.uploaded_at)}
                         </Typography>
                       </TableCell>
                       <TableCell>

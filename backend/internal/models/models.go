@@ -48,6 +48,7 @@ type TestReport struct {
 	Name          *string     `gorm:"type:varchar(255)" json:"name,omitempty"`
 	Source        string      `gorm:"type:varchar(50);not null" json:"source"`
 	UploadedAt    time.Time   `gorm:"type:timestamptz;not null;default:now();index:idx_exec_uploaded,priority:2,sort:desc" json:"uploaded_at"`
+	Timestamp     *time.Time  `gorm:"type:timestamptz" json:"timestamp,omitempty"`
 	RawXML        string      `gorm:"type:text;not null" json:"-"`
 	RawXMLSHA256  *string     `gorm:"type:varchar(64);index" json:"-"`
 	TotalTests    int         `gorm:"not null" json:"total_tests"`

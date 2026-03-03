@@ -191,6 +191,7 @@ def generate_junit_xml(
     cases_per_suite: tuple[int, int],
     fail_rate: float,
     skip_rate: float,
+    timestamp: Optional[datetime] = None,
 ) -> str:
     """Build a JUnit XML string with the given parameters."""
     root = ET.Element("testsuites")
@@ -203,7 +204,7 @@ def generate_junit_xml(
     total_t = total_p = total_f = total_s = 0
     total_dur = 0.0
 
-    for sname in suite_names:
+    for idx, sname in enumerate(suite_names):
         n_cases = random.randint(*cases_per_suite)
         suite_el = ET.SubElement(root, "testsuite", name=sname)
         s_pass = s_fail = s_skip = 0
@@ -253,7 +254,10 @@ def generate_junit_xml(
         suite_el.set("failures", str(s_fail))
         suite_el.set("skipped", str(s_skip))
         suite_el.set("time", f"{s_dur:.3f}")
-        suite_el.set("timestamp", datetime.now(timezone.utc).isoformat())
+        suite_ts = timestamp or datetime.now(timezone.utc)
+        # Add small per-suite jitter (0-60 min) so suites aren't identical
+        suite_ts = suite_ts + timedelta(minutes=random.uniform(0, 60) * idx)
+        suite_el.set("timestamp", suite_ts.isoformat())
 
         total_t += s_pass + s_fail + s_skip
         total_p += s_pass
@@ -396,6 +400,7 @@ def main():
                 cases_per_suite=cfg["cases_per_suite"],
                 fail_rate=cfg["fail_rate"],
                 skip_rate=cfg["skip_rate"],
+                timestamp=cfg["timestamp"],
             )
             result = ingest_report(
                 api_base=api,

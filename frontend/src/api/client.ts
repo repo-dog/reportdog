@@ -13,9 +13,11 @@ export interface TagInfo {
   count: number;
 }
 
+const meta = import.meta as ImportMeta & { env?: Record<string, string> };
+
 const api = axios.create({
-  baseURL: (import.meta as any).env?.VITE_API_BASE_URL
-    ? `${(import.meta as any).env.VITE_API_BASE_URL}/api/v1`
+  baseURL: meta.env?.VITE_API_BASE_URL
+    ? `${meta.env.VITE_API_BASE_URL}/api/v1`
     : '/api/v1',
 });
 

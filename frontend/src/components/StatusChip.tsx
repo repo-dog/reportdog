@@ -7,7 +7,7 @@ interface Props {
   size?: 'small' | 'medium';
 }
 
-const config: Record<string, { color: any; icon: React.ReactElement }> = {
+const config: Record<string, { color: 'success' | 'error' | 'warning' | 'default'; icon: React.ReactElement }> = {
   passed: { color: 'success', icon: <CheckCircle fontSize="small" /> },
   failed: { color: 'error', icon: <Cancel fontSize="small" /> },
   error: { color: 'warning', icon: <Error fontSize="small" /> },

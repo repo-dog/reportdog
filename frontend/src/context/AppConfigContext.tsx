@@ -10,14 +10,16 @@ const defaultConfig: AppConfig = { manualUploadEnabled: true };
 
 const AppConfigContext = createContext<AppConfig>(defaultConfig);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAppConfig = () => useContext(AppConfigContext);
 
 export const AppConfigProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { data } = useQuery<AppConfig>({
     queryKey: ['app-config'],
     queryFn: async () => {
-      const baseURL = (import.meta as any).env?.VITE_API_BASE_URL
-        ? `${(import.meta as any).env.VITE_API_BASE_URL}/api/v1`
+      const meta = import.meta as ImportMeta & { env?: Record<string, string> };
+      const baseURL = meta.env?.VITE_API_BASE_URL
+        ? `${meta.env.VITE_API_BASE_URL}/api/v1`
         : '/api/v1';
       const { data } = await axios.get(`${baseURL}/config`);
       return {

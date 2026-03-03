@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDate } from '../utils/formatDate';
 import {
   Box,
   Card,
@@ -197,7 +198,7 @@ const Home: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <Typography variant="caption">
-                          {new Date(r.uploaded_at).toLocaleString()}
+                          {formatDate(r.timestamp || r.uploaded_at)}
                         </Typography>
                       </TableCell>
                       <TableCell>

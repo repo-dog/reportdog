@@ -38,6 +38,7 @@ export interface TestReport {
   name?: string;
   source: string;
   uploaded_at: string;
+  timestamp?: string;
   total_tests: number;
   passed: number;
   failed: number;

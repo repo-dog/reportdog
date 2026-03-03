@@ -57,7 +57,10 @@ const Upload: React.FC = () => {
       }
     },
     onSuccess: (data) => navigate(`/reports/${data.report_id}`),
-    onError: (err: any) => setError(err?.response?.data?.details || err.message),
+    onError: (err: unknown) => {
+      const e = err as { response?: { data?: { details?: string } }; message?: string };
+      setError(e?.response?.data?.details || e?.message || 'Upload failed');
+    },
   });
 
   const addTag = () => {
