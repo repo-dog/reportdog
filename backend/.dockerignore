@@ -1,0 +1,6 @@
+.git
+*.md
+server
+*.exe
+.env
+.DS_Store

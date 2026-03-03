@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+dist/
+frontend/dist/
+backend/server
+*.exe
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test / coverage
+coverage/
+*.cover
+*.out
+
+# Docker overrides
+docker-compose.override.yml

@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: reportdog
+      POSTGRES_PASSWORD: reportdog
+      POSTGRES_DB: reportdog
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reportdog"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  reportdog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: reportdog
+      DB_PASSWORD: reportdog
+      DB_NAME: reportdog
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

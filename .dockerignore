@@ -1,0 +1,13 @@
+.git
+.github
+*.md
+.editorconfig
+.vscode
+scripts
+frontend/node_modules
+frontend/dist
+backend/server
+*.exe
+.env
+.env.*
+.DS_Store

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="62" fill="#e67e22"/>
+  <circle cx="64" cy="64" r="58" fill="#f39c12"/>
+
+  <!-- Clipboard body -->
+  <rect x="38" y="42" width="52" height="58" rx="5" fill="white" opacity="0.95"/>
+  <rect x="50" y="36" width="28" height="12" rx="4" fill="#d35400"/>
+  <circle cx="64" cy="42" r="3.5" fill="#f39c12"/>
+
+  <!-- Report lines -->
+  <rect x="46" y="56" width="30" height="3.5" rx="1.5" fill="#e67e22" opacity="0.5"/>
+  <rect x="46" y="64" width="36" height="3.5" rx="1.5" fill="#e67e22" opacity="0.5"/>
+  <rect x="46" y="72" width="24" height="3.5" rx="1.5" fill="#e67e22" opacity="0.5"/>
+
+  <!-- Check mark -->
+  <circle cx="76" cy="84" r="12" fill="#27ae60"/>
+  <polyline points="70,84 74.5,88.5 83,80" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Dog ear (top-left, cute floppy ear) -->
+  <ellipse cx="36" cy="30" rx="12" ry="16" fill="#d35400" transform="rotate(-15 36 30)"/>
+  <ellipse cx="36" cy="30" rx="8" ry="12" fill="#e67e22" transform="rotate(-15 36 30)"/>
+
+  <!-- Dog ear (top-right) -->
+  <ellipse cx="92" cy="30" rx="12" ry="16" fill="#d35400" transform="rotate(15 92 30)"/>
+  <ellipse cx="92" cy="30" rx="8" ry="12" fill="#e67e22" transform="rotate(15 92 30)"/>
+
+  <!-- Dog face -->
+  <circle cx="64" cy="34" r="18" fill="#f5d6a8"/>
+  <circle cx="64" cy="34" r="15" fill="#f0c88a"/>
+
+  <!-- Eyes -->
+  <circle cx="57" cy="30" r="3" fill="#2c3e50"/>
+  <circle cx="71" cy="30" r="3" fill="#2c3e50"/>
+  <circle cx="58" cy="29" r="1" fill="white"/>
+  <circle cx="72" cy="29" r="1" fill="white"/>
+
+  <!-- Nose -->
+  <ellipse cx="64" cy="37" rx="4" ry="3" fill="#2c3e50"/>
+  <ellipse cx="64" cy="36.5" rx="2" ry="1" fill="#4a6070" opacity="0.5"/>
+
+  <!-- Mouth -->
+  <path d="M60,39 Q64,43 68,39" fill="none" stroke="#2c3e50" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
