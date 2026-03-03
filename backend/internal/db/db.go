@@ -1,51 +1,64 @@
 package db
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
+	"os"
+	"path/filepath"
+	"sort"
+
+	_ "github.com/lib/pq"
 
 	"github.com/repo-dog/reportdog/backend/internal/config"
-	"github.com/repo-dog/reportdog/backend/internal/models"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
-// Connect establishes a connection to PostgreSQL.
-func Connect(cfg *config.Config) *gorm.DB {
-	db, err := gorm.Open(postgres.Open(cfg.DSN()), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
+// Connect establishes a connection to PostgreSQL using database/sql.
+func Connect(cfg *config.Config) *sql.DB {
+	dsn := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=UTC",
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
+	)
+
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		log.Fatalf("failed to connect to database: %v", err)
+		log.Fatalf("failed to open database: %v", err)
 	}
 
-	sqlDB, err := db.DB()
-	if err != nil {
-		log.Fatalf("failed to get sql.DB: %v", err)
-	}
-	sqlDB.SetMaxOpenConns(25)
-	sqlDB.SetMaxIdleConns(5)
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(5)
 
+	if err := db.Ping(); err != nil {
+		log.Fatalf("failed to ping database: %v", err)
+	}
+
+	log.Println("connected to database")
 	return db
 }
 
-// AutoMigrate runs GORM auto-migration for all models.
-func AutoMigrate(db *gorm.DB) {
-	// Drop legacy normalised tag tables (safe if they don't exist).
-	db.Exec("DROP TABLE IF EXISTS report_tags")
-	db.Exec("DROP TABLE IF EXISTS tags")
-
-	if err := db.AutoMigrate(
-		&models.TestReport{},
-		&models.TestSuite{},
-		&models.TestCase{},
-		&models.KnownTagKey{},
-	); err != nil {
-		log.Fatalf("failed to run migrations: %v", err)
+// Migrate reads all .sql files from migrationsDir in alphabetical order
+// and executes them against the database.
+func Migrate(database *sql.DB, migrationsDir string) {
+	files, err := filepath.Glob(filepath.Join(migrationsDir, "*.sql"))
+	if err != nil {
+		log.Fatalf("failed to read migrations directory: %v", err)
+	}
+	if len(files) == 0 {
+		log.Fatalf("no migration files found in %s", migrationsDir)
 	}
 
-	// GIN index on the JSONB tags column for fast containment queries.
-	db.Exec("CREATE INDEX IF NOT EXISTS idx_test_reports_tags ON test_reports USING GIN (tags)")
+	sort.Strings(files)
+
+	for _, f := range files {
+		content, err := os.ReadFile(f)
+		if err != nil {
+			log.Fatalf("failed to read migration file %s: %v", f, err)
+		}
+		if _, err := database.Exec(string(content)); err != nil {
+			log.Fatalf("migration %s failed: %v", filepath.Base(f), err)
+		}
+		log.Printf("applied migration: %s", filepath.Base(f))
+	}
 
 	log.Println("database migration completed")
 }

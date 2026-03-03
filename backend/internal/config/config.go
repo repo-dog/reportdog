@@ -16,6 +16,8 @@ type Config struct {
 	CORSAllowOrigin     string
 	MaxUploadSize       int64
 	DisableManualUpload bool
+	AutoMigrate         bool
+	MigrationsDir       string
 }
 
 // Load reads config from environment variables with sensible defaults.
@@ -30,6 +32,8 @@ func Load() *Config {
 		CORSAllowOrigin:     getEnv("CORS_ALLOW_ORIGIN", "http://localhost:3000"),
 		MaxUploadSize:       50 << 20, // 50 MB
 		DisableManualUpload: getEnv("DISABLE_MANUAL_UPLOAD", "") == "true",
+		AutoMigrate:         getEnv("AUTO_MIGRATE", "true") == "true",
+		MigrationsDir:       getEnv("MIGRATIONS_DIR", "migrations"),
 	}
 }
 

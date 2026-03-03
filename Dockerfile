@@ -19,7 +19,9 @@ FROM alpine:3.19
 RUN apk --no-cache add ca-certificates
 COPY --from=backend-builder /server /server
 COPY --from=frontend-builder /app/frontend/dist /public
+COPY backend/migrations /migrations
 
 ENV PUBLIC_DIR=/public
+ENV MIGRATIONS_DIR=/migrations
 EXPOSE 8080
 CMD ["/server"]

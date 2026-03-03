@@ -68,7 +68,7 @@ ReportDog ships as a **single Docker image**. The Go backend serves both the API
 | Component  | Tech                                          |
 |------------|-----------------------------------------------|
 | Frontend   | React 19, TypeScript, Vite, MUI v5, Recharts  |
-| Backend    | Go, Gin, GORM                                 |
+| Backend    | Go, Gin, database/sql                         |
 | Database   | PostgreSQL 16                                  |
 | Infra      | Docker, Docker Compose                         |
 
@@ -166,12 +166,50 @@ The dev server runs on [http://localhost:5173](http://localhost:5173).
 | `CORS_ALLOW_ORIGIN`      | `*`          | Allowed CORS origin (for dev)       |
 | `PUBLIC_DIR`             | `./public`   | Path to frontend static files       |
 | `DISABLE_MANUAL_UPLOAD`  | _(unset)_    | Set to `true` to disable UI upload  |
+| `AUTO_MIGRATE`           | `true`       | Set to `false` to disable automatic database migrations on startup |
+| `MIGRATIONS_DIR`         | `migrations` | Path to the directory containing `.sql` migration files |
 
 ### Frontend Environment Variables (dev only)
 
 | Variable             | Default                   | Description                                  |
 |----------------------|---------------------------|----------------------------------------------|
 | `VITE_API_BASE_URL`  | _(empty — same origin)_   | Backend API base URL (set for separate dev)  |
+
+## Database Migrations
+
+ReportDog ships with SQL migration files in `backend/migrations/`. By default, the server applies them automatically on startup.
+
+### Automatic (default)
+
+No action needed. Migrations run on every startup using idempotent `CREATE TABLE IF NOT EXISTS` / `CREATE INDEX IF NOT EXISTS` statements.
+
+### Manual
+
+If you prefer to manage schema changes yourself (e.g. via a CI pipeline or a DBA workflow), disable auto-migration and apply the files manually:
+
+1. Set the environment variable:
+
+```yaml
+environment:
+  AUTO_MIGRATE: "false"
+```
+
+2. Apply the migration files against your database in order:
+
+```bash
+psql -U reportdog -d reportdog -f backend/migrations/001_create_tables.sql
+psql -U reportdog -d reportdog -f backend/migrations/002_create_indexes.sql
+```
+
+Or apply all at once:
+
+```bash
+for f in backend/migrations/*.sql; do
+  psql -U reportdog -d reportdog -f "$f"
+done
+```
+
+All migration statements are idempotent and safe to re-run.
 
 ## API Reference
 

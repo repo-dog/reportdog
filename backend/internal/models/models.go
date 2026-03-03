@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 // TagPair is a single key-value tag stored inside JSONB.
@@ -43,86 +42,56 @@ func (t TagList) Value() (driver.Value, error) {
 
 // TestReport represents a single ingested test run.
 type TestReport struct {
-	ID            uuid.UUID   `gorm:"type:uuid;primaryKey" json:"id"`
-	ExecutionName string      `gorm:"type:varchar(255);not null;index:idx_exec_uploaded,priority:1" json:"execution_name"`
-	Name          *string     `gorm:"type:varchar(255)" json:"name,omitempty"`
-	Source        string      `gorm:"type:varchar(50);not null" json:"source"`
-	UploadedAt    time.Time   `gorm:"type:timestamptz;not null;default:now();index:idx_exec_uploaded,priority:2,sort:desc" json:"uploaded_at"`
-	Timestamp     *time.Time  `gorm:"type:timestamptz" json:"timestamp,omitempty"`
-	RawXML        string      `gorm:"type:text;not null" json:"-"`
-	RawXMLSHA256  *string     `gorm:"type:varchar(64);index" json:"-"`
-	TotalTests    int         `gorm:"not null" json:"total_tests"`
-	Passed        int         `gorm:"not null" json:"passed"`
-	Failed        int         `gorm:"not null" json:"failed"`
-	Skipped       int         `gorm:"not null" json:"skipped"`
-	DurationSec   float64     `gorm:"type:double precision;not null" json:"duration_sec"`
-	Tags          TagList     `gorm:"type:jsonb;not null;default:'[]'" json:"tags"`
-	Suites        []TestSuite `gorm:"foreignKey:ReportID;constraint:OnDelete:CASCADE" json:"suites,omitempty"`
-}
-
-// BeforeCreate sets defaults before inserting a TestReport.
-func (r *TestReport) BeforeCreate(tx *gorm.DB) error {
-	if r.ID == uuid.Nil {
-		r.ID = uuid.New()
-	}
-	if r.UploadedAt.IsZero() {
-		r.UploadedAt = time.Now().UTC()
-	}
-	if r.Tags == nil {
-		r.Tags = TagList{}
-	}
-	return nil
+	ID            uuid.UUID   `json:"id"`
+	ExecutionName string      `json:"execution_name"`
+	Name          *string     `json:"name,omitempty"`
+	Source        string      `json:"source"`
+	UploadedAt    time.Time   `json:"uploaded_at"`
+	Timestamp     *time.Time  `json:"timestamp,omitempty"`
+	RawXML        string      `json:"-"`
+	RawXMLSHA256  *string     `json:"-"`
+	TotalTests    int         `json:"total_tests"`
+	Passed        int         `json:"passed"`
+	Failed        int         `json:"failed"`
+	Skipped       int         `json:"skipped"`
+	DurationSec   float64     `json:"duration_sec"`
+	Tags          TagList     `json:"tags"`
+	Suites        []TestSuite `json:"suites,omitempty"`
 }
 
 // TestSuite represents a <testsuite> element.
 type TestSuite struct {
-	ID          uuid.UUID  `gorm:"type:uuid;primaryKey" json:"id"`
-	ReportID    uuid.UUID  `gorm:"type:uuid;not null;index" json:"report_id"`
-	Name        string     `gorm:"type:varchar(255);not null" json:"name"`
-	SuiteKey    string     `gorm:"type:varchar(255);not null;index" json:"suite_key"`
-	TotalTests  int        `gorm:"not null" json:"total_tests"`
-	Passed      int        `gorm:"not null" json:"passed"`
-	Failed      int        `gorm:"not null" json:"failed"`
-	Skipped     int        `gorm:"not null" json:"skipped"`
-	DurationSec float64    `gorm:"type:double precision;not null" json:"duration_sec"`
-	Timestamp   *time.Time `gorm:"type:timestamptz" json:"timestamp,omitempty"`
-	Cases       []TestCase `gorm:"foreignKey:SuiteID;constraint:OnDelete:CASCADE" json:"cases,omitempty"`
-}
-
-// BeforeCreate sets defaults before inserting a TestSuite.
-func (s *TestSuite) BeforeCreate(tx *gorm.DB) error {
-	if s.ID == uuid.Nil {
-		s.ID = uuid.New()
-	}
-	return nil
+	ID          uuid.UUID  `json:"id"`
+	ReportID    uuid.UUID  `json:"report_id"`
+	Name        string     `json:"name"`
+	SuiteKey    string     `json:"suite_key"`
+	TotalTests  int        `json:"total_tests"`
+	Passed      int        `json:"passed"`
+	Failed      int        `json:"failed"`
+	Skipped     int        `json:"skipped"`
+	DurationSec float64    `json:"duration_sec"`
+	Timestamp   *time.Time `json:"timestamp,omitempty"`
+	Cases       []TestCase `json:"cases,omitempty"`
 }
 
 // TestCase represents a <testcase> element.
 type TestCase struct {
-	ID          uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-	SuiteID     uuid.UUID `gorm:"type:uuid;not null;index" json:"suite_id"`
-	Name        string    `gorm:"type:varchar(255);not null" json:"name"`
-	TestKey     string    `gorm:"type:varchar(255);not null;index" json:"test_key"`
-	ClassName   *string   `gorm:"type:varchar(255)" json:"classname,omitempty"`
-	DurationSec float64   `gorm:"type:double precision;not null" json:"duration_sec"`
-	Status      string    `gorm:"type:varchar(50);not null" json:"status"`
-	FailureMsg  *string   `gorm:"type:text" json:"failure_msg,omitempty"`
-	FailureType *string   `gorm:"type:varchar(255)" json:"failure_type,omitempty"`
-	FailureText *string   `gorm:"type:text" json:"failure_text,omitempty"`
-	SystemOut   *string   `gorm:"type:text" json:"system_out,omitempty"`
-	SystemErr   *string   `gorm:"type:text" json:"system_err,omitempty"`
-}
-
-// BeforeCreate sets defaults before inserting a TestCase.
-func (c *TestCase) BeforeCreate(tx *gorm.DB) error {
-	if c.ID == uuid.Nil {
-		c.ID = uuid.New()
-	}
-	return nil
+	ID          uuid.UUID `json:"id"`
+	SuiteID     uuid.UUID `json:"suite_id"`
+	Name        string    `json:"name"`
+	TestKey     string    `json:"test_key"`
+	ClassName   *string   `json:"classname,omitempty"`
+	DurationSec float64   `json:"duration_sec"`
+	Status      string    `json:"status"`
+	FailureMsg  *string   `json:"failure_msg,omitempty"`
+	FailureType *string   `json:"failure_type,omitempty"`
+	FailureText *string   `json:"failure_text,omitempty"`
+	SystemOut   *string   `json:"system_out,omitempty"`
+	SystemErr   *string   `json:"system_err,omitempty"`
 }
 
 // KnownTagKey tracks distinct tag keys for autocomplete.
 type KnownTagKey struct {
-	Key        string    `gorm:"type:varchar(255);primaryKey" json:"key"`
-	LastSeenAt time.Time `gorm:"type:timestamptz;not null;default:now()" json:"last_seen_at"`
+	Key        string    `json:"key"`
+	LastSeenAt time.Time `json:"last_seen_at"`
 }
