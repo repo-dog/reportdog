@@ -21,7 +21,7 @@
   <a href="https://github.com/repo-dog/reportdog/actions/workflows/ci.yml"><img src="https://github.com/repo-dog/reportdog/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/repo-dog/reportdog/releases/latest"><img src="https://img.shields.io/github/v/release/repo-dog/reportdog" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/repo-dog/reportdog" alt="License"></a>
-  <a href="https://hub.docker.com/r/repo-dog/reportdog"><img src="https://img.shields.io/docker/pulls/repo-dog/reportdog" alt="Docker Pulls"></a>
+  <a href="https://hub.docker.com/r/repodog/reportdog"><img src="https://img.shields.io/docker/pulls/repodog/reportdog" alt="Docker Pulls"></a>
 </p>
 
 ---
