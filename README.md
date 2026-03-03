@@ -12,7 +12,7 @@
 <p align="center">
   <a href="#quick-start">Quick Start</a> •
   <a href="#what-it-does">What It Does</a> •
-  <a href="#api-reference">API</a> •
+  <a href="#ci-integration">CI Integration</a> •
   <a href="#configuration">Config</a> •
   <a href="#contributing">Contributing</a>
 </p>
@@ -211,69 +211,126 @@ done
 
 All migration statements are idempotent and safe to re-run.
 
-## API Reference
+## CI Integration
 
-All endpoints are prefixed with `/api/v1`.
+ReportDog accepts JUnit XML reports via two API endpoints. All endpoints are prefixed with `/api/v1`.
 
-### Reports
+### Option 1: File Upload (multipart form)
 
-| Method   | Path                                            | Description                         |
-|----------|-------------------------------------------------|-------------------------------------|
-| `POST`   | `/reports/upload`                               | Upload a JUnit XML file             |
-| `POST`   | `/reports/ingest`                               | Ingest raw XML body                 |
-| `GET`    | `/reports`                                      | List reports (with search/filter)   |
-| `GET`    | `/reports/:id`                                  | Get report details                  |
-| `GET`    | `/reports/:id/raw`                              | Download original XML               |
+`POST /api/v1/reports/upload`
 
-### Tags
+Send the XML as a multipart file along with form fields.
 
-| Method   | Path                                            | Description                         |
-|----------|-------------------------------------------------|-------------------------------------|
-| `POST`   | `/reports/:id/tags`                             | Add tags to a report                |
-| `DELETE` | `/reports/:id/tags`                             | Remove a tag (body: `{key, value}`) |
-| `GET`    | `/tags`                                         | List all tags with counts           |
-| `GET`    | `/tags/keys`                                    | List known tag keys (autocomplete)  |
-
-### Executions & Tests
-
-| Method   | Path                                            | Description                         |
-|----------|-------------------------------------------------|-------------------------------------|
-| `GET`    | `/executions/:name/reports`                     | Execution run history               |
-| `GET`    | `/executions/:name/tests/:testName/history`     | Individual test history             |
-
-### Stats & Metadata
-
-| Method   | Path                                            | Description                         |
-|----------|-------------------------------------------------|-------------------------------------|
-| `GET`    | `/stats`                                        | Dashboard summary stats             |
-| `GET`    | `/execution-names`                              | List all execution names            |
-
-### Health Check
-
-| Method | Path      | Description    |
-|--------|-----------|----------------|
-| `GET`  | `/health` | Liveness check |
-
-### Upload Examples
-
-**File upload:**
+| Field             | Required | Description                                               |
+|-------------------|----------|-----------------------------------------------------------|
+| `file`            | Yes      | The JUnit XML file                                        |
+| `execution_name`  | Yes      | Pipeline or test suite identifier (groups runs together)  |
+| `name`            | No       | Human-readable name for this run (e.g. "Run #42")         |
+| `tags`            | No       | Comma-separated `key:value` pairs                         |
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/reports/upload \
   -F "file=@results.xml" \
-  -H "X-Execution-Name: my-pipeline" \
-  -H "X-Report-Name: unit-tests" \
-  -H 'X-Tags: [{"key":"branch","value":"main"},{"key":"env","value":"ci"}]'
+  -F "execution_name=backend-unit-tests" \
+  -F "name=Run #42" \
+  -F "tags=branch:main,env:ci,team:platform"
 ```
 
-**Raw XML ingest:**
+### Option 2: Raw XML Ingest (body)
+
+`POST /api/v1/reports/ingest`
+
+Send the XML directly as the request body. Parameters are passed via headers or query params.
+
+| Header / Query Param    | Required | Description                                               |
+|-------------------------|----------|-----------------------------------------------------------|
+| `X-Execution-Name`      | Yes      | Pipeline or test suite identifier                         |
+| `X-Report-Name`         | No       | Human-readable name for this run                          |
+| `X-Tags`                | No       | Comma-separated `key:value` pairs                         |
+
+Headers can also be passed as query parameters: `execution_name`, `name`, `tags`.
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/reports/ingest \
   -H "Content-Type: application/xml" \
-  -H "X-Execution-Name: my-pipeline" \
-  -H "X-Report-Name: integration-tests" \
+  -H "X-Execution-Name: backend-unit-tests" \
+  -H "X-Report-Name: Run #42" \
+  -H "X-Tags: branch:main,env:ci,team:platform" \
   -d @results.xml
+```
+
+Or with query parameters:
+
+```bash
+curl -X POST "http://localhost:8080/api/v1/reports/ingest?execution_name=backend-unit-tests&name=Run+%2342&tags=branch:main,env:ci" \
+  -H "Content-Type: application/xml" \
+  -d @results.xml
+```
+
+### Response
+
+Both endpoints return `201 Created` with the report summary:
+
+```json
+{
+  "report_id": "a1b2c3d4-...",
+  "execution_name": "backend-unit-tests",
+  "total_tests": 142,
+  "passed": 138,
+  "failed": 3,
+  "skipped": 1,
+  "duration_sec": 23.45,
+  "uploaded_at": "2026-03-03T14:30:00Z"
+}
+```
+
+### CI Examples
+
+**GitHub Actions:**
+
+```yaml
+- name: Upload test results to ReportDog
+  if: always()
+  run: |
+    curl -X POST ${{ vars.REPORTDOG_URL }}/api/v1/reports/ingest \
+      -H "Content-Type: application/xml" \
+      -H "X-Execution-Name: ${{ github.repository }}-unit-tests" \
+      -H "X-Report-Name: ${{ github.run_id }}" \
+      -H "X-Tags: branch:${{ github.ref_name }},commit:${{ github.sha }},trigger:${{ github.event_name }}" \
+      -d @build/test-results/results.xml
+```
+
+**GitLab CI:**
+
+```yaml
+upload_results:
+  stage: .post
+  when: always
+  script:
+    - |
+      curl -X POST "$REPORTDOG_URL/api/v1/reports/ingest" \
+        -H "Content-Type: application/xml" \
+        -H "X-Execution-Name: ${CI_PROJECT_NAME}-unit-tests" \
+        -H "X-Report-Name: Pipeline #${CI_PIPELINE_ID}" \
+        -H "X-Tags: branch:${CI_COMMIT_REF_NAME},commit:${CI_COMMIT_SHORT_SHA}" \
+        -d @build/test-results/results.xml
+```
+
+**Jenkins (Declarative Pipeline):**
+
+```groovy
+post {
+    always {
+        sh """
+            curl -X POST ${REPORTDOG_URL}/api/v1/reports/ingest \
+              -H "Content-Type: application/xml" \
+              -H "X-Execution-Name: ${env.JOB_NAME}" \
+              -H "X-Report-Name: Build #${env.BUILD_NUMBER}" \
+              -H "X-Tags: branch:${env.BRANCH_NAME}" \
+              -d @build/test-results/results.xml
+        """
+    }
+}
 ```
 
 ## Test Data Generation
