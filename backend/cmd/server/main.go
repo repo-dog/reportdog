@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 
-	"github.com/akhilbojedla/reportdog/backend/internal/config"
-	"github.com/akhilbojedla/reportdog/backend/internal/db"
-	"github.com/akhilbojedla/reportdog/backend/internal/handlers"
-	"github.com/akhilbojedla/reportdog/backend/internal/router"
-	"github.com/akhilbojedla/reportdog/backend/internal/services"
+	"github.com/repo-dog/reportdog/backend/internal/config"
+	"github.com/repo-dog/reportdog/backend/internal/db"
+	"github.com/repo-dog/reportdog/backend/internal/handlers"
+	"github.com/repo-dog/reportdog/backend/internal/router"
+	"github.com/repo-dog/reportdog/backend/internal/services"
 )
 
 func main() {

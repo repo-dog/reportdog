@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/akhilbojedla/reportdog/backend/internal/handlers"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/repo-dog/reportdog/backend/internal/handlers"
 )
 
 // Setup creates and configures the Gin engine.

@@ -3,8 +3,8 @@ package db
 import (
 	"log"
 
-	"github.com/akhilbojedla/reportdog/backend/internal/config"
-	"github.com/akhilbojedla/reportdog/backend/internal/models"
+	"github.com/repo-dog/reportdog/backend/internal/config"
+	"github.com/repo-dog/reportdog/backend/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

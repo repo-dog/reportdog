@@ -1,4 +1,4 @@
-module github.com/akhilbojedla/reportdog/backend
+module github.com/repo-dog/reportdog/backend
 
 go 1.25.0
 

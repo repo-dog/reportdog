@@ -7,7 +7,7 @@ Thanks for your interest in contributing! Here's how to get started.
 1. **Prerequisites:** Go 1.22+, Node.js 20+, Docker & Docker Compose
 2. **Clone the repo:**
    ```bash
-   git clone https://github.com/akhilbojedla/reportdog.git
+   git clone https://github.com/repo-dog/reportdog.git
    cd reportdog
    ```
 3. **Start the database:**
@@ -72,7 +72,7 @@ reportdog/
 
 ## Reporting Issues
 
-- Use [GitHub Issues](https://github.com/akhilbojedla/reportdog/issues) to report bugs or request features.
+- Use [GitHub Issues](https://github.com/repo-dog/reportdog/issues) to report bugs or request features.
 - Include steps to reproduce for bugs.
 - Check existing issues before opening a new one.
 

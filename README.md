@@ -18,10 +18,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/akhilbojedla/reportdog/actions/workflows/ci.yml"><img src="https://github.com/akhilbojedla/reportdog/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/akhilbojedla/reportdog/releases/latest"><img src="https://img.shields.io/github/v/release/akhilbojedla/reportdog" alt="Release"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/akhilbojedla/reportdog" alt="License"></a>
-  <a href="https://hub.docker.com/r/akhilbojedla/reportdog"><img src="https://img.shields.io/docker/pulls/akhilbojedla/reportdog" alt="Docker Pulls"></a>
+  <a href="https://github.com/repo-dog/reportdog/actions/workflows/ci.yml"><img src="https://github.com/repo-dog/reportdog/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/repo-dog/reportdog/releases/latest"><img src="https://img.shields.io/github/v/release/repo-dog/reportdog" alt="Release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/repo-dog/reportdog" alt="License"></a>
+  <a href="https://hub.docker.com/r/repo-dog/reportdog"><img src="https://img.shields.io/docker/pulls/repo-dog/reportdog" alt="Docker Pulls"></a>
 </p>
 
 ---
@@ -81,7 +81,7 @@ ReportDog ships as a **single Docker image**. The Go backend serves both the API
 ### Run with Docker Compose
 
 ```bash
-git clone https://github.com/akhilbojedla/reportdog.git
+git clone https://github.com/repo-dog/reportdog.git
 cd reportdog
 docker compose up --build
 ```
@@ -110,7 +110,7 @@ services:
       retries: 5
 
   reportdog:
-    image: akhilbojedla/reportdog:latest
+    image: repo-dog/reportdog:latest
     ports:
       - "8080:8080"
     environment:

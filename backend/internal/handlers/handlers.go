@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/akhilbojedla/reportdog/backend/internal/models"
-	"github.com/akhilbojedla/reportdog/backend/internal/services"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/repo-dog/reportdog/backend/internal/models"
+	"github.com/repo-dog/reportdog/backend/internal/services"
 )
 
 // Handler holds all HTTP handler methods.

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/akhilbojedla/reportdog/backend/internal/models"
 	"github.com/google/uuid"
+	"github.com/repo-dog/reportdog/backend/internal/models"
 )
 
 // --- JUnit XML structures ---
