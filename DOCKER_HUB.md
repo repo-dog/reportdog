@@ -3,7 +3,7 @@
 **Your faithful companion for test results.**  
 Collect, visualize, and track JUnit XML reports — so no failure slips through the cracks.
 
-![ReportDog Demo](https://raw.githubusercontent.com/akhilbojedla/reportdog/main/docs/reportdog-demo.gif)
+![ReportDog Demo](https://raw.githubusercontent.com/repo-dog/reportdog/main/docs/reportdog-demo.gif)
 
 ---
 
